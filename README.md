@@ -7,11 +7,16 @@ Vagrant is used to provision and reproduce the virtual machines that make the la
 
 ## What This Project Delivers
 
-- A Flask backend exposing health and metrics endpoints
-- An Nginx frontend that visualizes backend diagnostics in real time
-- Kubernetes manifests for frontend, backend, ingress, autoscaling, and observability
-- VM-based environment provisioning with Vagrant scripts
-- CI/CD-friendly image build and deployment workflow
+- Dockerizes HTML, CSS, and JavaScript for the frontend
+- Dockerizes Python for the backend
+- Dockerizes the ELK stack
+- Demonstrates the installation steps for the entire DevOps Stack
+- Configures Kubernetes to run the frontend and backend
+- Configures Prometheus to scrape metrics from the frontend and backend
+- Configures Grafana to visualize metrics from Prometheus
+- Dockerizes Prometheus and Grafana
+
+- Configures ELK to collect logs from the frontend and backend
 
 ## Architecture at a Glance
 
