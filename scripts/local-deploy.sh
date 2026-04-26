@@ -1,23 +1,58 @@
-cd ~/projects
-cd frontend
-docker build -t 192.168.56.15:5000/sherlock-logs-frontend:prod .
-docker tag 192.168.56.15:5000/sherlock-logs-frontend:prod 192.168.56.15:5000/sherlock-logs-frontend:latest
-
-cd ../backend
-docker build -t 192.168.56.15:5000/sherlock-logs-backend:prod .
-docker tag 192.168.56.15:5000/sherlock-logs-backend:prod 192.168.56.15:5000/sherlock-logs-backend:latest
-
-cd ..
-docker push 192.168.56.15:5000/sherlock-logs-frontend:prod
-docker push 192.168.56.15:5000/sherlock-logs-frontend:latest
-docker push 192.168.56.15:5000/sherlock-logs-backend:prod
-docker push 192.168.56.15:5000/sherlock-logs-backend:latest
+#!/bin/bash
+set -e
 
 
-kubectl apply -f manifests/kubernates/
-kubectl rollout restart deployment/sherlock-logs-frontend
-kubectl rollout restart deployment/sherlock-logs-backend
+echo "======================================"
+echo "📦 Building FRONTEND"
+echo "======================================"
+cd ~/project/frontend
+DOCKER_USERNAME=tumbaoka
+sudo docker build -t $DOCKER_USERNAME/sherlock-logs-frontend:latest .
+sudo docker tag $DOCKER_USERNAME/sherlock-logs-frontend:latest $DOCKER_USERNAME/sherlock-logs-frontend:prod
+echo "🚀 Pushing FRONTEND images..."
+sudo docker push $DOCKER_USERNAME/sherlock-logs-frontend:latest
+sudo docker push $DOCKER_USERNAME/sherlock-logs-frontend:prod
+echo "frontend pushed successfully"
+#######################################
+# BACKEND BUILD + PUSH
+#######################################
+echo "======================================"
+echo "📦 Building BACKEND"
+echo "======================================"
+cd ~/project/backend
+sudo docker build -t $DOCKER_USERNAME/sherlock-logs-backend:latest .
+sudo docker tag $DOCKER_USERNAME/sherlock-logs-backend:latest $DOCKER_USERNAME/sherlock-logs-backend:prod
+echo "🚀 Pushing BACKEND images..."
+sudo docker push $DOCKER_USERNAME/sherlock-logs-backend:latest
+sudo docker push $DOCKER_USERNAME/sherlock-logs-backend:prod
 
-kubectl get svc
+echo "backend pushed successfully"
+#######################################
+# KUBERNETES DEPLOYMENT
+#######################################
+
+echo "Wait 10 seconds for images to be available in registry..."
+sleep 10
+echo "======================================"
+echo "☸️ DEPLOYING TO KUBERNETES"
+echo "======================================"
+
+cd ~/project
+kubectl apply -f manifests/kubernetes/
+echo "🔄 Restarting deployments..."
+kubectl rollout restart deployment/sherlock-logs-frontend || true
+kubectl rollout restart deployment/sherlock-logs-backend || true
+echo "======================================"
+echo "📊 CLUSTER STATUS"
+echo "======================================"
 kubectl get pods
+kubectl get svc
 kubectl get all
+echo "======================================"
+echo "✅ PIPELINE COMPLETED SUCCESSFULLY"
+echo "======================================"
+ 
+echo "It takes 100 seconds to load the pods and services. Fetching final status..."
+sleep 100
+kubectl get pods
+

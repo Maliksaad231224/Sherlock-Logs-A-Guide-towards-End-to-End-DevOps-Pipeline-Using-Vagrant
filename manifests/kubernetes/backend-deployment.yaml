@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: 192.168.56.15:5000/sherlock-logs-backend:prod
+          image: tumbaoka/sherlock-logs-backend:prod
           ports:
             - containerPort: 5000
           env:

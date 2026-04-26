@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 192.168.56.15:5000/sherlock-logs-frontend:prod
+          image: tumbaoka/sherlock-logs-frontend:prod
           ports:
             - containerPort: 80
           env:
